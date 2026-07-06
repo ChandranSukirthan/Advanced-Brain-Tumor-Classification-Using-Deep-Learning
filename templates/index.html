@@ -335,46 +335,48 @@
                         
                         <div class="specs-box mt-2">
                             <div class="spec-item">
-                                <span class="text-muted">Base Network</span>
-                                <span class="fw-medium">VGG-19 (Unfrozen)</span>
+                                <span style="color:#c4c9d8;">Base Network</span>
+                                <span class="fw-semibold text-white">VGG-19 (Unfrozen)</span>
                             </div>
                             <div class="spec-item">
-                                <span class="text-muted">Input Resolution</span>
-                                <span class="fw-medium">240 x 240 pixels (RGB)</span>
+                                <span style="color:#c4c9d8;">Input Resolution</span>
+                                <span class="fw-semibold text-white">240 x 240 pixels (RGB)</span>
                             </div>
                             <div class="spec-item">
-                                <span class="text-muted">Dense Layer 1</span>
-                                <span class="fw-medium">4,608 units (ReLU)</span>
+                                <span style="color:#c4c9d8;">Dense Layer 1</span>
+                                <span class="fw-semibold text-white">4,608 units (ReLU)</span>
                             </div>
                             <div class="spec-item">
-                                <span class="text-muted">Dropout Ratio</span>
-                                <span class="fw-medium">0.20 (20%)</span>
+                                <span style="color:#c4c9d8;">Dropout Ratio</span>
+                                <span class="fw-semibold text-white">0.20 (20%)</span>
                             </div>
                             <div class="spec-item">
-                                <span class="text-muted">Dense Layer 2</span>
-                                <span class="fw-medium">1,152 units (ReLU)</span>
+                                <span style="color:#c4c9d8;">Dense Layer 2</span>
+                                <span class="fw-semibold text-white">1,152 units (ReLU)</span>
                             </div>
                             <div class="spec-item">
-                                <span class="text-muted">Output Neurons</span>
-                                <span class="fw-medium">2 Classes (Softmax)</span>
+                                <span style="color:#c4c9d8;">Output Neurons</span>
+                                <span class="fw-semibold text-white">2 Classes (Softmax)</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Usage guidelines / Dataset info -->
                     <div class="glass-card p-4">
-                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-heart-pulse text-indigo-400 me-2" style="color: #818cf8;"></i>Classification Categories</h5>
-                        <ul class="list-unstyled text-muted mb-0">
-                            <li class="mb-2 d-flex align-items-start gap-2">
-                                <i class="fa-solid fa-square-check text-success mt-1"></i>
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-heart-pulse me-2" style="color: #818cf8;"></i>Classification Categories</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-3 d-flex align-items-start gap-2">
+                                <i class="fa-solid fa-square-check text-success mt-1 flex-shrink-0"></i>
                                 <div>
-                                    <strong class="text-light">No Brain Tumor (Class 0):</strong> MRI scan does not contain structural elements corresponding to neoplastic tissues.
+                                    <strong class="text-white">No Brain Tumor (Class 0):</strong>
+                                    <p class="mb-0 mt-1" style="color:#c4c9d8; font-size:0.875rem;">MRI scan does not contain structural elements corresponding to neoplastic tissues.</p>
                                 </div>
                             </li>
                             <li class="d-flex align-items-start gap-2">
-                                <i class="fa-solid fa-triangle-exclamation text-danger mt-1"></i>
+                                <i class="fa-solid fa-triangle-exclamation text-danger mt-1 flex-shrink-0"></i>
                                 <div>
-                                    <strong class="text-light">Yes Brain Tumor (Class 1):</strong> Model detected tissue abnormalities indicating the presence of a brain tumor.
+                                    <strong class="text-white">Yes Brain Tumor (Class 1):</strong>
+                                    <p class="mb-0 mt-1" style="color:#c4c9d8; font-size:0.875rem;">Model detected tissue abnormalities indicating the presence of a brain tumor.</p>
                                 </div>
                             </li>
                         </ul>
