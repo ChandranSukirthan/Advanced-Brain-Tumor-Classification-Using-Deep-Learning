@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Classification Platform</title>
+    
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Premium Styles -->
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(20, 26, 46, 0.65);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-color: #818cf8;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success-glow: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --danger-glow: linear-gradient(135deg, #dc2626 0%, #f87171 100%);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Header Glow Effect */
+        .brand-logo {
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* Card Glassmorphism */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(129, 140, 248, 0.25);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Interactive Upload Zone */
+        .upload-zone {
+            border: 2px dashed rgba(129, 140, 248, 0.3);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(17, 24, 39, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #818cf8;
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-zone i.upload-icon {
+            font-size: 3.5rem;
+            background: var(--primary-glow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-zone:hover i.upload-icon {
+            transform: translateY(-5px);
+        }
+
+        /* Custom Buttons */
+        .btn-gradient {
+            background: var(--primary-glow);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 12px 28px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-gradient:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+            color: #fff;
+        }
+
+        .btn-gradient:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Image Preview Box */
+        .preview-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            max-width: 100%;
+            height: 240px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Result Styles */
+        .result-badge {
+            font-size: 1.35rem;
+            font-weight: 700;
+            padding: 16px 28px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        .result-tumor {
+            background: var(--danger-glow);
+            box-shadow: 0 0 25px rgba(220, 38, 38, 0.4);
+            color: #ffffff;
+        }
+
+        .result-no-tumor {
+            background: var(--success-glow);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            color: #ffffff;
+        }
+
+        /* Micro-animations */
+        @keyframes pulse-glow {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(129, 140, 248, 0.2); }
+            50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(129, 140, 248, 0.45); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(129, 140, 248, 0.2); }
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading-animation 1.5s infinite;
+        }
+
+        @keyframes loading-animation {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Info Card */
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer links */
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #818cf8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fa-solid fa-brain me-2 text-indigo-400" style="color: #818cf8; font-size: 1.65rem;"></i>
+                <span class="brand-logo fs-3">NeuroClassify</span>
+            </a>
+            <div class="d-none d-md-flex align-items-center gap-3">
+                <span class="badge bg-dark border border-secondary text-secondary px-3 py-2 rounded-pill">
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> VGG19 Active
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-auto py-4">
+        <div class="row g-4 align-items-stretch">
+            
+            <!-- Left Panel: Classifier Card -->
+            <div class="col-lg-7">
+                <div class="glass-card h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                    <div>
+                        <h2 class="fw-bold mb-2">Brain MRI Tumor Classifier</h2>
+                        <p class="text-muted mb-4">Upload a high-resolution brain MRI scan below. Our neural network will analyze the structure to identify tumor presence.</p>
+                        
+                        <!-- Upload Form -->
+                        <form id="uploadForm">
+                            <div class="upload-zone mb-4" id="dropzone">
+                                <input type="file" id="fileInput" name="file" accept="image/*" class="d-none">
+                                <div id="uploadPrompt">
+                                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                    <h5 class="fw-semibold">Drag & Drop MRI image here</h5>
+                                    <p class="text-muted small mb-0">or click to browse your files (JPEG, PNG, TIFF)</p>
+                                </div>
+                                <div id="previewContainer" class="d-none">
+                                    <div class="preview-wrapper mb-3">
+                                        <img id="imagePreview" src="" alt="MRI Preview" class="preview-img">
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" id="changeImageBtn">
+                                        <i class="fa-solid fa-rotate me-1"></i> Choose Different Image
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-gradient btn-lg w-100" id="predictBtn" disabled>
+                                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Run Neurological Diagnosis
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Loader & Result Area -->
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-10 d-none" id="resultArea">
+                        <!-- Loading State -->
+                        <div id="loader" class="text-center py-3">
+                            <div class="spinner-border text-indigo" style="color: #818cf8; width: 3rem; height: 3rem;" role="status">
+                                <span class="visually-hidden">Analyzing...</span>
+                            </div>
+                            <h5 class="mt-3 fw-medium">Analyzing MRI Structural Patterns...</h5>
+                            <p class="text-muted small">VGG19 Feature Extraction layers are running...</p>
+                        </div>
+                        
+                        <!-- Output Result -->
+                        <div id="outputContainer" class="d-none text-center py-2">
+                            <h5 class="text-muted mb-3">Diagnostic Result</h5>
+                            <div id="resultBadge" class="result-badge mb-3">
+                                <!-- Dynamic Badge Content -->
+                            </div>
+                            <!-- Confidence Bar -->
+                            <div id="confidenceContainer" class="mb-3 d-none">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Model Confidence</span>
+                                    <span id="confidenceText">--</span>
+                                </div>
+                                <div class="progress" style="height: 10px; border-radius: 8px; background: rgba(255,255,255,0.06);">
+                                    <div id="confidenceBar" class="progress-bar" role="progressbar"
+                                        style="width: 0%; border-radius: 8px; transition: width 0.8s ease;"
+                                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <!-- Probability Breakdown -->
+                            <div id="probBreakdown" class="d-none mb-2">
+                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                    <span class="badge rounded-pill px-3 py-2" style="background: rgba(5,150,105,0.15); border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 0.8rem;">
+                                        <i class="fa-solid fa-shield-halved me-1"></i>No Tumor: <span id="probNo">--</span>%
+                                    </span>
+                                    <span class="badge rounded-pill px-3 py-2" style="background: rgba(220,38,38,0.15); border: 1px solid rgba(248,113,113,0.3); color: #f87171; font-size: 0.8rem;">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i>Tumor: <span id="probYes">--</span>%
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                <i class="fa-solid fa-circle-info me-1"></i> Predictions are based on the trained VGG19 CNN classifier.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Model Info and Stats -->
+            <div class="col-lg-5">
+                <div class="d-flex flex-column gap-4 h-100">
+                    
+                    <!-- VGG19 Model Info Card -->
+                    <div class="glass-card p-4 flex-fill">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-indigo-900 rounded-3 p-3 text-center" style="background: rgba(99, 102, 241, 0.15); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-server text-indigo-400" style="color: #818cf8; font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">Model Architecture</h4>
+                                <span class="text-muted small">Deep Convolutional Neural Network</span>
+                            </div>
+                        </div>
+                        
+                        <div class="specs-box mt-2">
+                            <div class="spec-item">
+                                <span class="text-muted">Base Network</span>
+                                <span class="fw-medium">VGG-19 (Unfrozen)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="text-muted">Input Resolution</span>
+                                <span class="fw-medium">240 x 240 pixels (RGB)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="text-muted">Dense Layer 1</span>
+                                <span class="fw-medium">4,608 units (ReLU)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="text-muted">Dropout Ratio</span>
+                                <span class="fw-medium">0.20 (20%)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="text-muted">Dense Layer 2</span>
+                                <span class="fw-medium">1,152 units (ReLU)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="text-muted">Output Neurons</span>
+                                <span class="fw-medium">2 Classes (Softmax)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usage guidelines / Dataset info -->
+                    <div class="glass-card p-4">
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-heart-pulse text-indigo-400 me-2" style="color: #818cf8;"></i>Classification Categories</h5>
+                        <ul class="list-unstyled text-muted mb-0">
+                            <li class="mb-2 d-flex align-items-start gap-2">
+                                <i class="fa-solid fa-square-check text-success mt-1"></i>
+                                <div>
+                                    <strong class="text-light">No Brain Tumor (Class 0):</strong> MRI scan does not contain structural elements corresponding to neoplastic tissues.
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-danger mt-1"></i>
+                                <div>
+                                    <strong class="text-light">Yes Brain Tumor (Class 1):</strong> Model detected tissue abnormalities indicating the presence of a brain tumor.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-4 border-top border-secondary border-opacity-10 text-center text-muted small">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 NeuroClassify. Built using Flask, TensorFlow, and VGG19. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AJAX and UI Interaction Logic -->
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPrompt = document.getElementById('uploadPrompt');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const changeImageBtn = document.getElementById('changeImageBtn');
+        const predictBtn = document.getElementById('predictBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        
+        const resultArea = document.getElementById('resultArea');
+        const loader = document.getElementById('loader');
+        const outputContainer = document.getElementById('outputContainer');
+        const resultBadge = document.getElementById('resultBadge');
+
+        // Drag & Drop event listeners
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFiles(files[0]);
+            }
+        });
+
+        // Click on dropzone trigger file input
+        dropzone.addEventListener('click', (e) => {
+            if (e.target !== changeImageBtn && !changeImageBtn.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFiles(fileInput.files[0]);
+            }
+        });
+
+        changeImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        function handleFiles(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                imagePreview.src = reader.result;
+                uploadPrompt.classList.add('d-none');
+                previewContainer.classList.remove('d-none');
+                predictBtn.disabled = false;
+                
+                // Hide previous results
+                resultArea.classList.add('d-none');
+                outputContainer.classList.add('d-none');
+            }
+        }
+
+        // Form submission
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (fileInput.files.length === 0) return;
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            // Show result area and loading screen
+            resultArea.classList.remove('d-none');
+            loader.classList.remove('d-none');
+            outputContainer.classList.add('d-none');
+            predictBtn.disabled = true;
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Server error'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader and show output
+                loader.classList.add('d-none');
+                outputContainer.classList.remove('d-none');
+
+                const confidenceContainer = document.getElementById('confidenceContainer');
+                const confidenceBar = document.getElementById('confidenceBar');
+                const confidenceText = document.getElementById('confidenceText');
+
+                // Render badge based on prediction result
+                if (data.result === "Yes Brain Tumor") {
+                    resultBadge.className = "result-badge result-tumor";
+                    resultBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Positive — Brain Tumor Detected`;
+                    confidenceBar.style.background = 'linear-gradient(135deg, #dc2626 0%, #f87171 100%)';
+                } else if (data.result === "No Brain Tumor") {
+                    resultBadge.className = "result-badge result-no-tumor";
+                    resultBadge.innerHTML = `<i class="fa-solid fa-shield-halved"></i> Negative — No Tumor Detected`;
+                    confidenceBar.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+                } else {
+                    resultBadge.className = "result-badge bg-secondary text-white";
+                    resultBadge.innerHTML = `<i class="fa-solid fa-circle-question"></i> ${data.result || 'Unknown'}`;
+                    confidenceBar.style.background = '#6b7280';
+                }
+
+                // Show confidence bar
+                if (data.confidence !== undefined) {
+                    confidenceContainer.classList.remove('d-none');
+                    const pct = Math.min(100, Math.max(0, data.confidence));
+                    confidenceText.textContent = pct.toFixed(1) + '%';
+                    // Animate bar after brief delay
+                    setTimeout(() => {
+                        confidenceBar.style.width = pct + '%';
+                        confidenceBar.setAttribute('aria-valuenow', pct);
+                    }, 100);
+                } else {
+                    confidenceContainer.classList.add('d-none');
+                }
+
+                // Show probability breakdown
+                const probBreakdown = document.getElementById('probBreakdown');
+                if (data.probs && data.probs.length === 2) {
+                    probBreakdown.classList.remove('d-none');
+                    document.getElementById('probNo').textContent  = data.probs[0].toFixed(1);
+                    document.getElementById('probYes').textContent = data.probs[1].toFixed(1);
+                } else {
+                    probBreakdown.classList.add('d-none');
+                }
+
+                predictBtn.disabled = false;
+            })
+            .catch(error => {
+                console.error(error);
+                loader.classList.add('d-none');
+                outputContainer.classList.remove('d-none');
+                document.getElementById('confidenceContainer').classList.add('d-none');
+                resultBadge.className = "result-badge bg-dark border border-danger text-danger";
+                resultBadge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${error.message || 'Analysis Failed. Please try again.'}`;
+                predictBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
